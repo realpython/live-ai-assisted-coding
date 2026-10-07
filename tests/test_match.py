@@ -43,7 +43,21 @@ def test_last_bot_standing_wins():
     assert game.round == STARTING_HP
 
 
-def test_round_limit_is_a_draw():
+def test_round_limit_goes_to_the_bot_with_most_hp():
+    game = make_game((wait_bot, (0, 0)), (wait_bot, (4, 4)), max_rounds=5)
+    game.bots[1].hp = 2
+    play_to_end(game)
+    assert game.winner is game.bots[0]
+
+
+def test_no_winner_before_the_round_limit():
+    game = make_game((wait_bot, (0, 0)), (wait_bot, (4, 4)), max_rounds=5)
+    game.bots[1].hp = 2
+    game.play_round()
+    assert game.winner is None
+
+
+def test_round_limit_with_a_tie_for_most_hp_is_a_draw():
     game = make_game((wait_bot, (0, 0)), (wait_bot, (4, 4)), max_rounds=5)
     play_to_end(game)
     assert game.round == 5

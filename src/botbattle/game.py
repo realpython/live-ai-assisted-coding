@@ -65,9 +65,19 @@ class Game:
 
     @property
     def winner(self) -> Bot | None:
-        """Return the last bot standing, or None if there isn't one."""
+        """Return the winner, or None if the match is a draw or still going.
+
+        The last bot standing wins. If time runs out first, the bot with the
+        most HP wins, and a tie for the most HP is a draw.
+        """
         living = self.living_bots()
-        return living[0] if len(living) == 1 else None
+        if len(living) == 1:
+            return living[0]
+        if self.round < self.max_rounds or not living:
+            return None
+        most_hp = max(bot.hp for bot in living)
+        leaders = [bot for bot in living if bot.hp == most_hp]
+        return leaders[0] if len(leaders) == 1 else None
 
     def play_round(self) -> None:
         """Let every living bot act once, in a random order."""

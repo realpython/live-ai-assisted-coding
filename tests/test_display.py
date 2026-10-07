@@ -70,7 +70,14 @@ def test_finished_game_shows_the_winner():
     )
 
 
-def test_round_limit_shows_a_draw():
+def test_round_limit_shows_the_bot_with_most_hp():
+    game = make_game(max_rounds=5)
+    game.round = 5
+    game.bots[1].hp = 1
+    assert render(game).endswith("\n\nWinner: chaser (most HP when time ran out)")
+
+
+def test_round_limit_with_a_tie_shows_a_draw():
     game = make_game(max_rounds=5)
     game.round = 5
     assert render(game).endswith("\n\nDraw")

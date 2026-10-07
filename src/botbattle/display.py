@@ -63,4 +63,6 @@ def result_line(game: Game) -> str:
     """Return how the match ended: the winner's name, or a draw."""
     if game.winner is None:
         return "Draw"
+    if len(game.living_bots()) > 1:
+        return f"Winner: {game.winner.name} (most HP when time ran out)"
     return f"Winner: {game.winner.name}"

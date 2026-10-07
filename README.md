@@ -47,7 +47,8 @@ Press Ctrl+C to stop. These options are available:
 - A move off the grid or into an occupied square does nothing.
 - An attack hits the bot on the neighbouring square in that direction for 1 HP.
 - At 0 HP a bot is out. The last bot standing wins.
-- After 200 rounds, the match is a draw.
+- After 200 rounds, the bot with the most HP wins. A tie for the most HP
+  is a draw.
 
 ## Write Your Own Bot
 

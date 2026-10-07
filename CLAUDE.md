@@ -25,8 +25,9 @@ Because a bot is just a function, the audience can write and submit their own.
 - [ ] Rules are enforced and tested: moves off the grid or into an occupied
   square do nothing; an attack hits only the adjacent square in its direction;
   a hit costs 1 HP; a bot at 0 HP is removed.
-- [ ] A match ends with one bot left (the winner) or at a turn limit (a
-  draw), and the same seed always replays the same match.
+- [ ] A match ends with one bot left (the winner) or at a turn limit, where
+  the bot with the most HP wins (a tie for the most HP is a draw). The same
+  seed always replays the same match.
 - [ ] A bot that raises an error, returns an invalid action, or tries to
   change the game state just waits that turn. The game never crashes.
 - [ ] Adding a bot means adding one file to `bots/`, with no registration
