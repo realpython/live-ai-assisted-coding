@@ -5,17 +5,39 @@ developers. They'll read every line you write, so write code they can follow.
 
 ## Project
 
-<!-- Filled in live during step 1 of the session. -->
+**What we're building:** Bot Battle, a terminal game where bots fight on a
+grid until one is left. Each bot is a plain Python function that picks an
+action every turn: move up, down, left, or right by one square, attack an
+adjacent bot, or wait. Bots start with 3 HP and are removed at 0. The last bot
+standing wins. Anyone can add a bot by opening a pull request with one file.
 
-**What we're building:** TBD
-
-**Why:** TBD
+**Why:** It's a small, fun project with clear rules that's easy to build live.
+Because a bot is just a function, the audience can write and submit their own.
 
 ## Definition of Done
 
 <!-- Checkable criteria. These become the end-to-end acceptance tests. -->
 
-- [ ] TBD
+- [ ] `uv run botbattle` runs a match between all bots in `bots/` on a 10×10
+  grid and announces the winner.
+- [ ] A bot is a plain function: it receives a read-only view of the game and
+  returns one action (a move, an attack in a direction, or wait).
+- [ ] Rules are enforced and tested: moves off the grid or into an occupied
+  square do nothing; an attack hits only the adjacent square in its direction;
+  a hit costs 1 HP; a bot at 0 HP is removed.
+- [ ] A match ends with one bot left (the winner) or at a turn limit (a
+  draw), and the same seed always replays the same match.
+- [ ] A bot that raises an error, returns an invalid action, or tries to
+  change the game state just waits that turn. The game never crashes.
+- [ ] Adding a bot means adding one file to `bots/`, with no registration
+  step. At least 3 example bots ship this way.
+- [ ] `uv run botbattle` animates the match as text in the terminal: the grid
+  redraws in place each round, a panel shows each bot's name and HP, defeated
+  bots disappear and are marked out, and the final screen shows the result.
+  `--delay` sets the speed, and `--no-animate` prints only the result.
+- [ ] The README explains how to write and submit a bot.
+- [ ] *(Optional)* A GitHub Actions check runs on every PR: ruff, pytest, and
+  a match that includes the new bot.
 
 ## How We Work
 
@@ -67,6 +89,9 @@ uv run ruff format .       # format
 ## Git Rules
 
 There is exactly one writer: you (Claude Code). The host and students only pull.
+The one exception is bot submissions: anyone may open a PR that adds a single
+file to `bots/`, and the host reviews and merges it. Pull before each unit so
+merged bots don't cause conflicts.
 
 - **One unit = one commit = one push.** Commit message format:
   `Unit 3: Message and file insights`, with a short body explaining *why*.
