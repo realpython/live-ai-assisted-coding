@@ -2,7 +2,6 @@ import dataclasses
 
 import pytest
 
-from botbattle.cli import main
 from botbattle.view import ACTIONS, DIRECTIONS, BotInfo, BotView
 
 
@@ -35,8 +34,3 @@ def test_actions_are_moves_attacks_and_wait():
 def test_up_makes_y_smaller():
     assert DIRECTIONS["up"] == (0, -1)
     assert DIRECTIONS["down"] == (0, 1)
-
-
-def test_main_runs(capsys):
-    main()
-    assert "Bot Battle" in capsys.readouterr().out

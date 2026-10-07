@@ -55,8 +55,12 @@ def render(game: Game) -> str:
 
     if game.is_over:
         lines.append("")
-        if game.winner is None:
-            lines.append("Draw")
-        else:
-            lines.append(f"Winner: {game.winner.name}")
+        lines.append(result_line(game))
     return "\n".join(lines)
+
+
+def result_line(game: Game) -> str:
+    """Return how the match ended: the winner's name, or a draw."""
+    if game.winner is None:
+        return "Draw"
+    return f"Winner: {game.winner.name}"
