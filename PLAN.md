@@ -24,23 +24,35 @@ add to by PR. `uv run botbattle` loads every bot, plays a seeded match on a
 ```python
 # One table drives both moves and attacks: "attack_up" uses DIRECTIONS["up"].
 DIRECTIONS = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
-ACTIONS = {"up", "down", "left", "right",
-           "attack_up", "attack_down", "attack_left", "attack_right", "wait"}
+ACTIONS = {
+    "up",
+    "down",
+    "left",
+    "right",
+    "attack_up",
+    "attack_down",
+    "attack_left",
+    "attack_right",
+    "wait",
+}
+
 
 @dataclass(frozen=True)
-class BotInfo:          # what anyone can see about a bot
+class BotInfo:  # what anyone can see about a bot
     name: str
     x: int
     y: int
     hp: int
 
+
 @dataclass(frozen=True)
-class BotView:          # what a bot receives each turn ((0, 0) is top-left)
+class BotView:  # what a bot receives each turn ((0, 0) is top-left)
     me: BotInfo
-    others: tuple[BotInfo, ...]   # living opponents only
+    others: tuple[BotInfo, ...]  # living opponents only
     width: int
     height: int
     round: int
+
 
 # A bot file defines:  def act(view: BotView) -> str
 ```

@@ -1,10 +1,17 @@
 [project]
-name = "live-session-project"  # Renamed live once the project is picked
+name = "botbattle"
 version = "0.1.0"
-description = "Built live in a Real Python Live session on AI-assisted coding"
+description = "Bots fight on a grid in the terminal until one is left standing"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = []
+
+[project.scripts]
+botbattle = "botbattle.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.11,<0.13"]
+build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
