@@ -6,8 +6,16 @@ import pytest
 from botbattle.cli import CLEAR_SCREEN, main
 
 REAL_BOTS_FOLDER = Path(__file__).parent.parent / "bots"
-SHIPPED_BOTS = ["chaser.py", "coward.py", "example.py", "random_walker.py"]
-DEMO_SEED = "0"  # The shipped bots play to a winner with this seed
+SHIPPED_BOTS = [
+    "chaser.py",
+    "coward.py",
+    "example.py",
+    "hit_and_run.py",
+    "random_walker.py",
+    "turret.py",
+    "vulture.py",
+]
+DEMO_SEED = "2"  # The shipped bots play to a winner with this seed
 
 
 @pytest.fixture

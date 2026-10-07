@@ -54,7 +54,8 @@ def test_skips_file_starting_with_underscore(tmp_path):
 def test_real_bots_load_and_return_valid_actions():
     bots = load_bots(REAL_BOTS_FOLDER)
     names = [name for name, _ in bots]
-    assert {"chaser", "coward", "example", "random_walker"} <= set(names)
+    shipped = {"chaser", "coward", "example", "hit_and_run", "random_walker"}
+    assert shipped | {"turret", "vulture"} <= set(names)
 
     view = make_view((4, 4), (7, 2))
     for _, act in bots:
@@ -94,3 +95,42 @@ def test_coward_fights_back_when_cornered():
     neighbour = BotInfo("neighbour", 1, 0, hp=3)
     view = BotView(me=me, others=(neighbour,), width=2, height=1, round=1)
     assert coward(view) == Action.ATTACK_RIGHT
+
+
+def test_vulture_goes_for_the_weakest_opponent():
+    vulture = load_real_bots()["vulture"]
+    me = BotInfo("me", 4, 4, hp=3)
+    strong_and_close = BotInfo("strong", 5, 4, hp=3)
+    weak_and_far = BotInfo("weak", 4, 8, hp=1)
+    view = BotView(
+        me=me, others=(strong_and_close, weak_and_far), width=10, height=10, round=1
+    )
+    assert vulture(view) == Action.DOWN
+
+
+def test_vulture_attacks_the_weakest_when_it_is_next_to_it():
+    vulture = load_real_bots()["vulture"]
+    me = BotInfo("me", 4, 4, hp=3)
+    weak = BotInfo("weak", 4, 3, hp=1)
+    view = BotView(me=me, others=(weak,), width=10, height=10, round=1)
+    assert vulture(view) == Action.ATTACK_UP
+
+
+def test_turret_never_moves():
+    turret = load_real_bots()["turret"]
+    assert turret(make_view((4, 4), (8, 8))) == Action.WAIT
+    assert turret(make_view((4, 4), (4, 5))) == Action.ATTACK_DOWN
+
+
+def test_hit_and_run_chases_when_healthy():
+    hit_and_run = load_real_bots()["hit_and_run"]
+    assert hit_and_run(make_view((4, 4), (5, 4))) == Action.ATTACK_RIGHT
+    assert hit_and_run(make_view((4, 4), (4, 8))) == Action.DOWN
+
+
+def test_hit_and_run_flees_when_hurt():
+    hit_and_run = load_real_bots()["hit_and_run"]
+    me = BotInfo("me", 4, 4, hp=1)
+    attacker = BotInfo("attacker", 5, 4, hp=3)
+    view = BotView(me=me, others=(attacker,), width=10, height=10, round=1)
+    assert hit_and_run(view) in {Action.LEFT, Action.UP, Action.DOWN}
