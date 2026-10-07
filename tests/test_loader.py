@@ -54,7 +54,7 @@ def test_skips_file_starting_with_underscore(tmp_path):
 def test_real_bots_load_and_return_valid_actions():
     bots = load_bots(REAL_BOTS_FOLDER)
     names = [name for name, _ in bots]
-    assert {"chaser", "coward", "random_walker"} <= set(names)
+    assert {"chaser", "coward", "example", "random_walker"} <= set(names)
 
     view = make_view((4, 4), (7, 2))
     for _, act in bots:
