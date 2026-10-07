@@ -1,17 +1,17 @@
 """Hunts the nearest opponent: attacks if it is next to us, else walks closer."""
 
-from botbattle.view import DIRECTIONS, BotView
+from botbattle.view import ATTACKS, DIRECTIONS, Action, BotView
 
 
-def act(view: BotView) -> str:
+def act(view: BotView) -> Action:
     if not view.others:
-        return "wait"
+        return Action.WAIT
 
     me = view.me
     for direction, (dx, dy) in DIRECTIONS.items():
         for other in view.others:
             if (other.x, other.y) == (me.x + dx, me.y + dy):
-                return f"attack_{direction}"
+                return ATTACKS[direction]
 
     target = min(
         view.others, key=lambda other: abs(other.x - me.x) + abs(other.y - me.y)
@@ -21,5 +21,5 @@ def act(view: BotView) -> str:
 
     # Close the bigger gap first.
     if abs(dx) >= abs(dy):
-        return "right" if dx > 0 else "left"
-    return "down" if dy > 0 else "up"
+        return Action.RIGHT if dx > 0 else Action.LEFT
+    return Action.DOWN if dy > 0 else Action.UP

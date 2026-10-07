@@ -2,7 +2,7 @@ import dataclasses
 
 import pytest
 
-from botbattle.view import ACTIONS, DIRECTIONS, BotInfo, BotView
+from botbattle.view import ATTACKS, DIRECTIONS, Action, BotInfo, BotView
 
 
 def make_view() -> BotView:
@@ -23,14 +23,18 @@ def test_bot_view_is_read_only():
         view.round = 5
 
 
-def test_actions_are_moves_attacks_and_wait():
-    assert len(ACTIONS) == 9
-    for direction in DIRECTIONS:
-        assert direction in ACTIONS
-        assert f"attack_{direction}" in ACTIONS
-    assert "wait" in ACTIONS
+def test_actions_are_four_moves_four_attacks_and_wait():
+    assert len(Action) == 9
+    assert len(DIRECTIONS) == 4
+    assert set(ATTACKS) == set(DIRECTIONS)
+    assert Action.WAIT in Action
+
+
+def test_actions_are_also_plain_strings():
+    assert Action.ATTACK_UP == "attack_up"
+    assert Action("wait") is Action.WAIT
 
 
 def test_up_makes_y_smaller():
-    assert DIRECTIONS["up"] == (0, -1)
-    assert DIRECTIONS["down"] == (0, 1)
+    assert DIRECTIONS[Action.UP] == (0, -1)
+    assert DIRECTIONS[Action.DOWN] == (0, 1)

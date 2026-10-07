@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from botbattle.loader import load_bots
-from botbattle.view import ACTIONS, BotInfo, BotView
+from botbattle.view import Action, BotInfo, BotView
 
 REAL_BOTS_FOLDER = Path(__file__).parent.parent / "bots"
 
@@ -58,33 +58,33 @@ def test_real_bots_load_and_return_valid_actions():
 
     view = make_view((4, 4), (7, 2))
     for _, act in bots:
-        assert act(view) in ACTIONS
+        assert act(view) in Action
 
 
 def test_chaser_attacks_adjacent_opponent():
     chaser = load_real_bots()["chaser"]
-    assert chaser(make_view((4, 4), (5, 4))) == "attack_right"
-    assert chaser(make_view((4, 4), (4, 3))) == "attack_up"
+    assert chaser(make_view((4, 4), (5, 4))) == Action.ATTACK_RIGHT
+    assert chaser(make_view((4, 4), (4, 3))) == Action.ATTACK_UP
 
 
 def test_chaser_moves_toward_distant_opponent():
     chaser = load_real_bots()["chaser"]
-    assert chaser(make_view((4, 4), (8, 5))) == "right"
-    assert chaser(make_view((4, 4), (3, 0))) == "up"
+    assert chaser(make_view((4, 4), (8, 5))) == Action.RIGHT
+    assert chaser(make_view((4, 4), (3, 0))) == Action.UP
 
 
 def test_chaser_and_coward_wait_when_alone():
     bots = load_real_bots()
-    assert bots["chaser"](make_view((4, 4))) == "wait"
-    assert bots["coward"](make_view((4, 4))) == "wait"
+    assert bots["chaser"](make_view((4, 4))) == Action.WAIT
+    assert bots["coward"](make_view((4, 4))) == Action.WAIT
 
 
 def test_coward_moves_away_from_nearby_opponent():
     coward = load_real_bots()["coward"]
     # Opponent on the right: left, up and down all gain distance, right does not.
-    assert coward(make_view((4, 4), (5, 4))) in {"left", "up", "down"}
+    assert coward(make_view((4, 4), (5, 4))) in {Action.LEFT, Action.UP, Action.DOWN}
     # Opponent above and a wall behind us: only sidestepping helps.
-    assert coward(make_view((0, 9), (0, 8))) == "right"
+    assert coward(make_view((0, 9), (0, 8))) == Action.RIGHT
 
 
 def test_coward_fights_back_when_cornered():
@@ -93,4 +93,4 @@ def test_coward_fights_back_when_cornered():
     me = BotInfo("me", 0, 0, hp=3)
     neighbour = BotInfo("neighbour", 1, 0, hp=3)
     view = BotView(me=me, others=(neighbour,), width=2, height=1, round=1)
-    assert coward(view) == "attack_right"
+    assert coward(view) == Action.ATTACK_RIGHT

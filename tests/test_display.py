@@ -1,9 +1,10 @@
 from botbattle.display import render
 from botbattle.game import Game
+from botbattle.view import Action
 
 
 def wait_bot(view):
-    return "wait"
+    return Action.WAIT
 
 
 def make_game(max_rounds=200):

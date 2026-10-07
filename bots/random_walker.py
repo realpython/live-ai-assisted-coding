@@ -2,10 +2,10 @@
 
 import random
 
-from botbattle.view import DIRECTIONS, BotView
+from botbattle.view import DIRECTIONS, Action, BotView
 
-CHOICES = list(DIRECTIONS) + ["wait"]
+CHOICES = list(DIRECTIONS) + [Action.WAIT]
 
 
-def act(view: BotView) -> str:
+def act(view: BotView) -> Action:
     return random.choice(CHOICES)

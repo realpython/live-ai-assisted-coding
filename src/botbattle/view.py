@@ -1,26 +1,42 @@
 """What a bot can see each turn, and the actions it can choose from."""
 
 from dataclasses import dataclass
+from enum import StrEnum
 
-# Each direction is an (x, y) step. (0, 0) is the top-left square,
-# so "up" makes y smaller and "down" makes it bigger.
+
+class Action(StrEnum):
+    """Everything a bot can do on its turn.
+
+    A StrEnum member is also a plain string, so a bot can return either
+    Action.ATTACK_UP or "attack_up". Typos like Action.ATTAK_UP fail loudly.
+    """
+
+    UP = "up"
+    DOWN = "down"
+    LEFT = "left"
+    RIGHT = "right"
+    ATTACK_UP = "attack_up"
+    ATTACK_DOWN = "attack_down"
+    ATTACK_LEFT = "attack_left"
+    ATTACK_RIGHT = "attack_right"
+    WAIT = "wait"
+
+
+# Each move is an (x, y) step. (0, 0) is the top-left square,
+# so UP makes y smaller and DOWN makes it bigger.
 DIRECTIONS = {
-    "up": (0, -1),
-    "down": (0, 1),
-    "left": (-1, 0),
-    "right": (1, 0),
+    Action.UP: (0, -1),
+    Action.DOWN: (0, 1),
+    Action.LEFT: (-1, 0),
+    Action.RIGHT: (1, 0),
 }
 
-ACTIONS = {
-    "up",
-    "down",
-    "left",
-    "right",
-    "attack_up",
-    "attack_down",
-    "attack_left",
-    "attack_right",
-    "wait",
+# The attack that goes with each direction.
+ATTACKS = {
+    Action.UP: Action.ATTACK_UP,
+    Action.DOWN: Action.ATTACK_DOWN,
+    Action.LEFT: Action.ATTACK_LEFT,
+    Action.RIGHT: Action.ATTACK_RIGHT,
 }
 
 

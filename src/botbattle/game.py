@@ -4,12 +4,15 @@ import random
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from botbattle.view import ACTIONS, DIRECTIONS, BotInfo, BotView
+from botbattle.view import ATTACKS, DIRECTIONS, Action, BotInfo, BotView
 
 STARTING_HP = 3
 
-# A bot is any function that takes a BotView and returns an action name.
-BotFunction = Callable[[BotView], str]
+# A bot is any function that takes a BotView and returns an Action.
+BotFunction = Callable[[BotView], Action | str]
+
+# ATTACKS turned around: which direction each attack points in.
+ATTACK_DIRECTIONS = {attack: direction for direction, attack in ATTACKS.items()}
 
 
 @dataclass
@@ -75,16 +78,17 @@ class Game:
             if bot.is_alive:  # It may have been knocked out earlier this round
                 self.apply_action(bot, self.choose_action(bot))
 
-    def choose_action(self, bot: Bot) -> str:
-        """Ask a bot for its action. A crash or an invalid answer means "wait"."""
+    def choose_action(self, bot: Bot) -> Action:
+        """Ask a bot for its action. A crash or an invalid answer means WAIT."""
         try:
-            action = bot.act(self.make_view(bot))
+            answer = bot.act(self.make_view(bot))
         except Exception:
             # A broken bot must never stop the match, so it just loses its turn.
-            return "wait"
-        if not isinstance(action, str) or action not in ACTIONS:
-            return "wait"
-        return action
+            return Action.WAIT
+        try:
+            return Action(answer)  # Turns "up" into Action.UP
+        except ValueError:
+            return Action.WAIT
 
     def make_view(self, bot: Bot) -> BotView:
         """Build a fresh, read-only view of the game for one bot."""
@@ -115,24 +119,22 @@ class Game:
     def is_on_grid(self, x: int, y: int) -> bool:
         return 0 <= x < self.size and 0 <= y < self.size
 
-    def apply_action(self, bot: Bot, action: str) -> None:
+    def apply_action(self, bot: Bot, action: Action) -> None:
         """Carry out one bot's action. Anything not allowed does nothing."""
         if action in DIRECTIONS:
             self.move(bot, action)
-        elif action.startswith("attack_"):
-            direction = action.removeprefix("attack_")
-            if direction in DIRECTIONS:
-                self.attack(bot, direction)
-        # "wait" needs no code: the bot simply does nothing.
+        elif action in ATTACK_DIRECTIONS:
+            self.attack(bot, ATTACK_DIRECTIONS[action])
+        # WAIT needs no code: the bot simply does nothing.
 
-    def move(self, bot: Bot, direction: str) -> None:
+    def move(self, bot: Bot, direction: Action) -> None:
         """Move one square, unless that's off the grid or already taken."""
         dx, dy = DIRECTIONS[direction]
         new_x, new_y = bot.x + dx, bot.y + dy
         if self.is_on_grid(new_x, new_y) and self.bot_at(new_x, new_y) is None:
             bot.x, bot.y = new_x, new_y
 
-    def attack(self, bot: Bot, direction: str) -> None:
+    def attack(self, bot: Bot, direction: Action) -> None:
         """Hit the bot on the neighbouring square, if there is one."""
         dx, dy = DIRECTIONS[direction]
         target = self.bot_at(bot.x + dx, bot.y + dy)

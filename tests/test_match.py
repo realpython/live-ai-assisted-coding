@@ -3,23 +3,23 @@ import random
 import pytest
 
 from botbattle.game import STARTING_HP, Game
-from botbattle.view import ACTIONS
+from botbattle.view import Action
 
 
 def wait_bot(view):
-    return "wait"
+    return Action.WAIT
 
 
 def attack_right_bot(view):
-    return "attack_right"
+    return Action.ATTACK_RIGHT
 
 
 def attack_left_bot(view):
-    return "attack_left"
+    return Action.ATTACK_LEFT
 
 
 def random_bot(view):
-    return random.choice(sorted(ACTIONS))
+    return random.choice(list(Action))
 
 
 def make_game(*bots_and_squares, max_rounds=200):
@@ -68,7 +68,7 @@ def test_bot_sees_itself_and_living_opponents():
 
     def watching_bot(view):
         seen.append(view)
-        return "wait"
+        return Action.WAIT
 
     game = make_game((watching_bot, (0, 0)), (wait_bot, (3, 3)), (wait_bot, (4, 4)))
     game.bots[2].hp = 0
@@ -85,7 +85,7 @@ def crashing_bot(view):
 
 def cheating_bot(view):
     view.me.hp = 99  # Not allowed: the view is read-only
-    return "up"
+    return Action.UP
 
 
 @pytest.mark.parametrize(
@@ -104,6 +104,12 @@ def test_misbehaving_bot_just_waits(bad_bot):
     bad, neighbour = game.bots
     assert (bad.x, bad.y, bad.hp) == (1, 1, STARTING_HP)
     assert neighbour.hp == STARTING_HP
+
+
+def test_bot_can_return_a_plain_string():
+    game = make_game((lambda view: "attack_right", (1, 1)), (wait_bot, (2, 1)))
+    game.play_round()
+    assert game.bots[1].hp == STARTING_HP - 1
 
 
 def test_bot_knocked_out_mid_round_does_not_act(monkeypatch):
