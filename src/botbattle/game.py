@@ -4,7 +4,7 @@ import random
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from botbattle.view import DIRECTIONS, BotView
+from botbattle.view import ACTIONS, DIRECTIONS, BotInfo, BotView
 
 STARTING_HP = 3
 
@@ -30,10 +30,22 @@ class Bot:
 class Game:
     """A match between bots on a square grid."""
 
-    def __init__(self, bots: list[tuple[str, BotFunction]], size: int = 10) -> None:
+    def __init__(
+        self,
+        bots: list[tuple[str, BotFunction]],
+        size: int = 10,
+        max_rounds: int = 200,
+        seed: int | None = None,
+    ) -> None:
         if len(bots) > size * size:
             raise ValueError(f"{len(bots)} bots don't fit on a {size}x{size} grid")
         self.size = size
+        self.max_rounds = max_rounds
+        self.round = 0
+
+        # Seeding the random module makes the whole match repeatable,
+        # including any bots that use random to make their choices.
+        random.seed(seed)
 
         # Pick a different random square for each bot.
         squares = [(x, y) for x in range(size) for y in range(size)]
@@ -42,6 +54,52 @@ class Game:
             Bot(name=name, act=act, x=x, y=y)
             for (name, act), (x, y) in zip(bots, start_squares, strict=True)
         ]
+
+    @property
+    def is_over(self) -> bool:
+        """The match ends when one bot (or none) is left, or time runs out."""
+        return len(self.living_bots()) <= 1 or self.round >= self.max_rounds
+
+    @property
+    def winner(self) -> Bot | None:
+        """Return the last bot standing, or None if there isn't one."""
+        living = self.living_bots()
+        return living[0] if len(living) == 1 else None
+
+    def play_round(self) -> None:
+        """Let every living bot act once, in a random order."""
+        self.round += 1
+        order = self.living_bots()
+        random.shuffle(order)
+        for bot in order:
+            if bot.is_alive:  # It may have been knocked out earlier this round
+                self.apply_action(bot, self.choose_action(bot))
+
+    def choose_action(self, bot: Bot) -> str:
+        """Ask a bot for its action. A crash or an invalid answer means "wait"."""
+        try:
+            action = bot.act(self.make_view(bot))
+        except Exception:
+            # A broken bot must never stop the match, so it just loses its turn.
+            return "wait"
+        if not isinstance(action, str) or action not in ACTIONS:
+            return "wait"
+        return action
+
+    def make_view(self, bot: Bot) -> BotView:
+        """Build a fresh, read-only view of the game for one bot."""
+        others = tuple(
+            BotInfo(name=other.name, x=other.x, y=other.y, hp=other.hp)
+            for other in self.living_bots()
+            if other is not bot
+        )
+        return BotView(
+            me=BotInfo(name=bot.name, x=bot.x, y=bot.y, hp=bot.hp),
+            others=others,
+            width=self.size,
+            height=self.size,
+            round=self.round,
+        )
 
     def living_bots(self) -> list[Bot]:
         """Return the bots that are still in the game."""
