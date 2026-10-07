@@ -18,26 +18,29 @@ Because a bot is just a function, the audience can write and submit their own.
 
 <!-- Checkable criteria. These become the end-to-end acceptance tests. -->
 
-- [ ] `uv run botbattle` runs a match between all bots in `bots/` on a 10×10
+All checked in step 6: `uv run pytest` (54 tests), `uv run botbattle`, and
+the GitHub Actions run on `main`.
+
+- [x] `uv run botbattle` runs a match between all bots in `bots/` on a 10×10
   grid and announces the winner.
-- [ ] A bot is a plain function: it receives a read-only view of the game and
+- [x] A bot is a plain function: it receives a read-only view of the game and
   returns one action (a move, an attack in a direction, or wait).
-- [ ] Rules are enforced and tested: moves off the grid or into an occupied
+- [x] Rules are enforced and tested: moves off the grid or into an occupied
   square do nothing; an attack hits only the adjacent square in its direction;
   a hit costs 1 HP; a bot at 0 HP is removed.
-- [ ] A match ends with one bot left (the winner) or at a turn limit, where
+- [x] A match ends with one bot left (the winner) or at a turn limit, where
   the bot with the most HP wins (a tie for the most HP is a draw). The same
   seed always replays the same match.
-- [ ] A bot that raises an error, returns an invalid action, or tries to
+- [x] A bot that raises an error, returns an invalid action, or tries to
   change the game state just waits that turn. The game never crashes.
-- [ ] Adding a bot means adding one file to `bots/`, with no registration
+- [x] Adding a bot means adding one file to `bots/`, with no registration
   step. At least 3 example bots ship this way.
-- [ ] `uv run botbattle` animates the match as text in the terminal: the grid
+- [x] `uv run botbattle` animates the match as text in the terminal: the grid
   redraws in place each round, a panel shows each bot's name and HP, defeated
   bots disappear and are marked out, and the final screen shows the result.
   `--delay` sets the speed, and `--no-animate` prints only the result.
-- [ ] The README explains how to write and submit a bot.
-- [ ] *(Optional)* A GitHub Actions check runs on every PR: ruff, pytest, and
+- [x] The README explains how to write and submit a bot.
+- [x] *(Optional)* A GitHub Actions check runs on every PR: ruff, pytest, and
   a match that includes the new bot.
 
 ## How We Work
